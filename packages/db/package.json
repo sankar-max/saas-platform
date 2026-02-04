@@ -1,14 +1,10 @@
 {
   "name": "@saas/db",
   "version": "0.0.1",
-  "private": true,
   "main": "index.ts",
-  "types": "index.ts",
   "devDependencies": {
     "drizzle-kit": "^0.31.8"
   },
-  "dependencies": {
-    "drizzle-orm": "^0.45.1",
-    "pg": "^8.18.0"
-  }
+  "private": true,
+  "types": "index.ts"
 }

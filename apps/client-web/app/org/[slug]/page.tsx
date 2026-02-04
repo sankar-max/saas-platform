@@ -1,8 +1,6 @@
-// apps/client-web/app/org/[slug]/page.tsx
 import { auth } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 import TenantDashboardClient from "@/components/TenantDashboardClient"
-
 export default async function OrgDashboard({
   params,
 }: {

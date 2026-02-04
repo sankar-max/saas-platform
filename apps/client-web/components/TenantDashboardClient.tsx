@@ -1,6 +1,7 @@
 "use client"
 
 import { trpc } from "@saas/api/trpc/client"
+import { useState } from "react"
 
 interface Props {
   slug: string
@@ -13,69 +14,84 @@ export default function TenantDashboardClient({
   initialOrgId,
   initialOrgSlug,
 }: Props) {
-  const { data, isLoading, error } = trpc.tenant.getCurrent.useQuery(
-    undefined,
-    {
-      // You can add initialData if you want to avoid flicker
-      // initialData: { orgId: initialOrgId, orgSlug: initialOrgSlug }
-    }
-  )
+  const utils = trpc.useUtils()
+  const { data: forms, isLoading: formsLoading } = trpc.forms.list.useQuery()
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl text-gray-600">Loading tenant data...</div>
-      </div>
-    )
-  }
+  const createForm = trpc.forms.create.useMutation({
+    onSuccess: () => {
+      utils.forms.list.invalidate()
+      setFormName("")
+      setFormDesc("")
+    },
+  })
 
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-red-600">
-        Error: {error.message}
-      </div>
-    )
-  }
+  const [formName, setFormName] = useState("")
+  const [formDesc, setFormDesc] = useState("")
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-10">
-        <h1 className="text-4xl font-bold text-gray-900 mb-8">
-          Dashboard for{" "}
-          <span className="text-indigo-600">{initialOrgSlug}</span>
-        </h1>
+      {/* Your existing header / stats */}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-          <div className="bg-indigo-50 p-6 rounded-xl border border-indigo-200">
-            <h2 className="text-xl font-semibold text-indigo-800 mb-3">
-              Organization ID
-            </h2>
-            <p className="text-gray-700 font-mono break-all">{initialOrgId}</p>
-          </div>
-
-          <div className="bg-green-50 p-6 rounded-xl border border-green-200">
-            <h2 className="text-xl font-semibold text-green-800 mb-3">
-              URL Slug
-            </h2>
-            <p className="text-gray-700 font-mono">{slug}</p>
-          </div>
-        </div>
-
-        <div className="bg-gray-900 text-green-400 p-6 rounded-xl font-mono text-sm overflow-auto">
-          <h2 className="text-xl font-semibold text-white mb-4">
-            tRPC Response:
-          </h2>
-          <pre>{JSON.stringify(data, null, 2)}</pre>
-        </div>
-
-        <div className="mt-10 text-center">
-          <a
-            href="/orgs"
-            className="inline-block px-8 py-4 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors"
+      <div className="mt-12 bg-white rounded-xl shadow-lg p-8">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-gray-900">Your Forms</h2>
+          <button
+            onClick={() => {
+              if (formName.trim()) {
+                createForm.mutate({ name: formName, description: formDesc })
+              }
+            }}
+            disabled={createForm.isPending || !formName.trim()}
+            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition"
           >
-            Switch Organization
-          </a>
+            {createForm.isPending ? "Creating..." : "Create Form"}
+          </button>
         </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          <input
+            type="text"
+            value={formName}
+            onChange={(e) => setFormName(e.target.value)}
+            placeholder="Form name (e.g. Customer Feedback)"
+            className="p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+          />
+          <input
+            type="text"
+            value={formDesc}
+            onChange={(e) => setFormDesc(e.target.value)}
+            placeholder="Description (optional)"
+            className="p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
+
+        {formsLoading ? (
+          <p className="text-gray-500">Loading your forms...</p>
+        ) : forms?.length === 0 ? (
+          <p className="text-gray-500 text-center py-10">
+            No forms yet — create one above!
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {forms?.map((form) => (
+              <div
+                key={form.id}
+                className="p-6 border rounded-lg bg-white shadow hover:shadow-md transition"
+              >
+                <h3 className="font-semibold text-lg">{form.name}</h3>
+                {form.description && (
+                  <p className="text-sm text-gray-600 mt-1">
+                    {form.description}
+                  </p>
+                )}
+                <p className="text-xs text-gray-500 mt-3">
+                  {form.isPublished ? "Published" : "Draft"} •{" "}
+                  {new Date(form.createdAt).toLocaleDateString()}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
