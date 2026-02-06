@@ -2,7 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { httpBatchLink } from "@trpc/client"
-import { trpc } from "@saas/api/trpc/client"
+import { trpc } from "@saas/api/client"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { useState } from "react"
 import superjson from "superjson"

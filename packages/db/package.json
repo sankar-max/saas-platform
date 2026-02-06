@@ -6,5 +6,9 @@
     "drizzle-kit": "^0.31.8"
   },
   "private": true,
-  "types": "index.ts"
+  "types": "index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --config ../../eslint.config.mjs"
+  }
 }

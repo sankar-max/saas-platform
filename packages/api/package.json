@@ -3,5 +3,15 @@
   "version": "0.0.1",
   "private": true,
   "main": "index.ts",
-  "types": "index.ts"
+  "types": "index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --config ../../eslint.config.mjs"
+  },
+  "dependencies": {
+    "@saas/auth": "*",
+    "@saas/permissions": "*",
+    "@saas/db": "*",
+    "zod": "^4.3.6"
+  }
 }

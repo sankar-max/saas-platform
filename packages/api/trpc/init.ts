@@ -1,19 +1,22 @@
 import { initTRPC } from "@trpc/server"
 import superjson from "superjson"
-import { z } from "zod"
 
-export const t = initTRPC
-  .context<{
-    userId: string | null
-    orgId: string | null
-    orgSlug: string | null
-  }>()
-  .create({
-    transformer: superjson,
-    errorFormatter({ shape }) {
-      return shape
-    },
-  })
+export const createContext = async (opts: { userId: string | null; orgId: string | null; orgSlug: string | null }) => {
+  return {
+    userId: opts.userId,
+    orgId: opts.orgId,
+    orgSlug: opts.orgSlug,
+  };
+};
+
+export type Context = Awaited<ReturnType<typeof createContext>>;
+
+export const t = initTRPC.context<Context>().create({
+  transformer: superjson,
+  errorFormatter({ shape }) {
+    return shape;
+  },
+});
 
 // Export reusable router and procedure helpers
 export const router = t.router

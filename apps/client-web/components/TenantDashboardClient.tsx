@@ -1,6 +1,6 @@
 "use client"
 
-import { trpc } from "@saas/api/trpc/client"
+import { trpc } from "@saas/api/client"
 import { useState } from "react"
 
 interface Props {
@@ -9,11 +9,7 @@ interface Props {
   initialOrgSlug: string
 }
 
-export default function TenantDashboardClient({
-  slug,
-  initialOrgId,
-  initialOrgSlug,
-}: Props) {
+export default function TenantDashboardClient() {
   const utils = trpc.useUtils()
   const { data: forms, isLoading: formsLoading } = trpc.forms.list.useQuery()
 
@@ -52,14 +48,18 @@ export default function TenantDashboardClient({
           <input
             type="text"
             value={formName}
-            onChange={(e) => setFormName(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setFormName(e.target.value)
+            }
             placeholder="Form name (e.g. Customer Feedback)"
             className="p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500"
           />
           <input
             type="text"
             value={formDesc}
-            onChange={(e) => setFormDesc(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setFormDesc(e.target.value)
+            }
             placeholder="Description (optional)"
             className="p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500"
           />

@@ -1,4 +1,3 @@
-import { z } from "zod"
 import { router, tenantProcedure } from "../init"
 
 export const tenantRouter = router({

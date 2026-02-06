@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@saas/auth": ["../auth"],
+      "@saas/permissions": ["../permissions"],
+      "@saas/db": ["../db"],
+      "@saas/db/*": ["../db/*"]
+    }
+  },
+  "include": ["index.ts", "**/*.ts"],
+  "exclude": ["node_modules"]
+}
